@@ -3,6 +3,7 @@ from pprint import pprint
 import time
 import os
 import multiprocessing
+import concurrent.futures
 
 Scientist = collections.namedtuple('Scientist',[
     'name',
@@ -69,7 +70,9 @@ scientists_by_field=reduce(
         scientists,
         dd
         )
+
 #pprint(scientists_by_field)
+
 def transform(x):
         print(f'{os.getpid()} working record {x.name}')
         time.sleep(1)
@@ -79,13 +82,18 @@ def transform(x):
 
 start = time.time()
 
-pool = multiprocessing.Pool(processes = len(scientists))
-result = pool.map(transform, scientists)
+#pool = multiprocessing.Pool()
+#result = pool.map(transform, scientists)
+
 
 #result = tuple(map(
  #   transform,
   #  scientists
-   # ))
+  # ))
+
+with concurrent.futures.ProcessPoolExecutor() as executor:
+                result = executor.map(transform, scientists)
+                
 end = time.time()
 
 print(f'\nTime to complete: {end - start:.2f}s\n')
